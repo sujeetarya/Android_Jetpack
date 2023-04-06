@@ -7,9 +7,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.androidjetpack.api.QuotesApi
 import com.example.androidjetpack.api.RetrofitHelper
+import com.example.androidjetpack.db.QuoteDatabase
 import com.example.androidjetpack.repository.QuoteRepository
 import com.example.androidjetpack.view_models.MainVMFactory
 import com.example.androidjetpack.view_models.MainViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +28,12 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel.quote.observe(this, Observer {
             Log.d("API DATA", it.toString())
+            GlobalScope.launch {
+                val database = QuoteDatabase.getDatabase(this@MainActivity)
+                database.quotesDao().insertQuotes(it.results)
+            }
         })
+
 
     }
 }
